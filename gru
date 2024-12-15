@@ -1,0 +1,47 @@
+#!/usr/bin/python3
+
+import os
+import sys
+import random
+
+
+def create_pid(child_pids):
+    pid = os.fork()
+
+    if pid == 0:
+        S = random.randint(5, 10)
+        os.execlp('python3', 'python3', 'minion', str(S))
+    else:
+        print(f'Gru[{os.getpid()}]: process created. PID {pid}')
+        child_pids.append(pid)
+
+
+if len(sys.argv) != 2:
+    print("You must give count of creating pids")
+    sys.exit(1)
+
+try:
+    N = int(sys.argv[1])
+    if N <= 0:
+        raise ValueError
+except ValueError:
+    print("Count of creating pids must be a positive integer.")
+    sys.exit(1)
+
+child_pids = []
+
+for x in range(N):
+    create_pid(child_pids)
+
+while len(child_pids) != 0:
+    for pid in child_pids:
+        child_pid, status = os.wait()
+        exit_status = os.WEXITSTATUS(status)
+        print(f'Gru[{os.getpid()}]: process terminated. PID {child_pid}. Exit status {exit_status}')
+        child_pids.remove(child_pid)
+
+        if exit_status != 0:
+            create_pid(child_pids)
+
+sys.exit(0)
+

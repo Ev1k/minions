@@ -1,0 +1,24 @@
+#!/usr/bin/python3
+
+import os
+import sys
+import time
+import random
+
+
+if len(sys.argv) != 2:
+    print("You must give count of seconds")
+    sys.exit(1)
+
+try:
+    S = int(sys.argv[1])
+except ValueError:
+    print("S must be an integer.")
+    sys.exit(1)
+
+print(f'Minion[{os.getpid()}]: created. Parent PID {os.getppid()}')
+time.sleep(S)
+exit_status = random.choice([0, 1])
+print(f'Child[{os.getpid()}]: before terminated. Parent PID {os.getppid()}. Exit status {exit_status}')
+sys.exit(exit_status)
+
